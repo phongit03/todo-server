@@ -1,24 +1,26 @@
 package com.todoapp.todo_server.controller;
 
+import com.todoapp.todo_server.entity.Roles;
 import com.todoapp.todo_server.entity.Task;
 import com.todoapp.todo_server.service.TaskService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Role;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
-
-@RestController
 @RequestMapping(path = "/api/v1/tasks")
+@RestController
+
 public class TaskController {
     @Autowired
     public TaskService taskService;
 
-    @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseEntity<List<Task>> getAllTasks() {
+    @GetMapping
+    public ResponseEntity<List<Task>> getAllTasks(@RequestHeader("Authorization") String token) {
         try {
             List<Task> tasks = taskService.getAllTasks();
             if(tasks.isEmpty()) {
@@ -31,7 +33,7 @@ public class TaskController {
 
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @GetMapping("/{id}")
     public ResponseEntity<Task> getTaskById(@PathVariable Long id) {
         try {
             Optional<Task> taskData = taskService.getTaskById(id);
@@ -43,7 +45,7 @@ public class TaskController {
 
     }
 
-    @RequestMapping(value = "/add", method = RequestMethod.POST)
+    @PostMapping("/add")
     public ResponseEntity<Task> addTask(@RequestBody Task task) {
         try {
             Task newTask = taskService.addTask(new Task(task.getTitle(), task.getDescription()));
@@ -54,7 +56,7 @@ public class TaskController {
 
     }
 
-    @RequestMapping(value = "", method = RequestMethod.DELETE)
+    @DeleteMapping
     public ResponseEntity<HttpStatus> deleteAllTasks() {
         try{
             taskService.deleteAllTasks();
