@@ -6,20 +6,11 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-
 import io.jsonwebtoken.security.WeakKeyException;
-import jakarta.websocket.Decoder;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
-
-import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
-import java.awt.*;
-import java.nio.charset.StandardCharsets;
-import java.security.Key;
-import java.util.Arrays;
-import java.util.Base64;
 import java.util.Date;
 
 @Component
@@ -56,11 +47,8 @@ public class JWTGenerator {
     private SecretKey getSigninKey() throws WeakKeyException {
 
         try {
-            System.out.println("Creating key....");
             byte[] secreteBytes = Decoders.BASE64.decode(SecurityConstants.JWT_SECRETES);
-            SecretKey key = Keys.hmacShaKeyFor(secreteBytes);
-            System.out.println("Key Created: "+key);
-            return key;
+            return Keys.hmacShaKeyFor(secreteBytes);
         } catch (WeakKeyException e) {
             throw new WeakKeyException("Your secret key is invalid!");
         }
