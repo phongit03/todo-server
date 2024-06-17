@@ -1,4 +1,4 @@
-package com.todoapp.todo_server.service;
+package com.todoapp.todo_server.security;
 
 import com.todoapp.todo_server.entity.Roles;
 import com.todoapp.todo_server.entity.UserEntity;
