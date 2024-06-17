@@ -30,6 +30,7 @@ public class JWTAuthFilter extends OncePerRequestFilter {
 
         String token = getJWTfromRequest(request);
         if(StringUtils.hasText(token) && tokenGenerator.validate(token)) {
+            System.out.println(token);
             String username = null;
             try {
                 username = tokenGenerator.getUsernameFromJWT(token);
@@ -37,12 +38,12 @@ public class JWTAuthFilter extends OncePerRequestFilter {
                 throw new RuntimeException(e);
             }
             UserDetails userDetails = customeUserDetailsService.loadUserByUsername(username);
+            System.out.println(userDetails.getAuthorities().toString());
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails,null, userDetails.getAuthorities());
             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
         }
-
         filterChain.doFilter(request, response);
         System.out.println("Filtering token....");
     }

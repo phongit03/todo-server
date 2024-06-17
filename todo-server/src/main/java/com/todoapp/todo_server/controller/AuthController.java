@@ -5,7 +5,6 @@ import com.todoapp.todo_server.dto.LoginDTO;
 import com.todoapp.todo_server.dto.RegisterDTO;
 import com.todoapp.todo_server.entity.Roles;
 import com.todoapp.todo_server.entity.UserEntity;
-import com.todoapp.todo_server.repository.RoleRepository;
 import com.todoapp.todo_server.repository.UserRepository;
 import com.todoapp.todo_server.security.JWTGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +14,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import com.todoapp.todo_server.repository.RoleRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,8 +55,8 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody RegisterDTO registerDTO) {
+    @PostMapping("/register/{role}")
+    public ResponseEntity<String> register(@RequestBody RegisterDTO registerDTO, @PathVariable String role) {
         try {
             if(userRepository.existsByUsername(registerDTO.getUsername())) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -64,11 +64,9 @@ public class AuthController {
             UserEntity user = new UserEntity();
             user.setUsername(registerDTO.getUsername());
             user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
-
-            Roles roles = roleRepository.findByRoleName("USER").get();
+            Roles roles = roleRepository.findByRoleName(role.equalsIgnoreCase("admin")? "ADMIN" : "USER").get();
             user.setRolesList(Collections.singleton(roles));
             userRepository.save(user);
-            System.out.println(user.getUsername() + " " + user.getPassword());
             return new ResponseEntity<>("User registered!", HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
