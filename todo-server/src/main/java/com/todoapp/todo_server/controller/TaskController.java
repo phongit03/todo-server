@@ -42,7 +42,6 @@ public class TaskController {
         }catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
     }
 
     @PostMapping("/add")
@@ -53,10 +52,9 @@ public class TaskController {
         }catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
     }
 
-    @DeleteMapping
+    @DeleteMapping("/delete")
     public ResponseEntity<HttpStatus> deleteAllTasks() {
         try{
             taskService.deleteAllTasks();
@@ -65,5 +63,15 @@ public class TaskController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<HttpStatus> deleteTaskById(@PathVariable Long id) {
+        try {
+            taskService.deleteById(id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
