@@ -1,30 +1,42 @@
 package com.todoapp.todo_server.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
+import java.util.Optional;
+
+@Getter
 @Entity
 @Table(name = "tasks")
 public class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonIgnore
     private Long id;
 
 
+    @Setter
     private String title;
 
+    @Setter
     private String description;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
+    @Setter
+    private UserEntity userAssigned;
 
 
     public Task() {
 
 
-    }
-
-    public Task(String title, String description) {
-        this.title = title;
-        this.description = description;
     }
 
     public Task(Long id, String title, String description) {
@@ -33,23 +45,13 @@ public class Task {
         this.description = description;
     }
 
-    public String getTitle() {
-        return title;
-    }
 
-    public void setTitle(String title) {
+
+    public Task(String title, String description) {
         this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
         this.description = description;
     }
 
-    public Long getId() {
-        return id;
-    }
+
+
 }
