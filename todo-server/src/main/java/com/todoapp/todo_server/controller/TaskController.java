@@ -40,6 +40,19 @@ public class TaskController {
 
     }
 
+    @GetMapping("/search/{title}")
+    public ResponseEntity<List<Task>> searchTasksByName(@PathVariable String title) {
+        try {
+            List<Task> tasks = taskService.getTasksByTitle(title);
+            if(tasks.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>(tasks, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<Optional<List<Task>>> getTasksAssignedToUser(@PathVariable Long userId) {

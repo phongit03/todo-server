@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class TaskService {
@@ -41,5 +42,12 @@ public class TaskService {
     public Optional<List<Task>> getTasksByUserId(Long userId) {
         Optional<UserEntity> userAssigned = userRepository.findById(userId);
         return taskRepository.findAllByUserAssigned(userAssigned);
+    }
+
+    public List<Task> getTasksByTitle(String title) {
+
+        return taskRepository.findAll().stream()
+                .filter(task -> task.getTitle().toLowerCase().contains(title.toLowerCase()))
+                .collect(Collectors.toList());
     }
 }
