@@ -42,7 +42,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         authorize -> authorize
                                 .requestMatchers("/api/auth/**").permitAll()
-                                .requestMatchers("/api/v1/tasks/delete/**", "/api/v1/tasks/add" ).hasAuthority("ADMIN")
+                                .requestMatchers("/api/v1/tasks/delete/**", "/api/v1/tasks/add/**").hasAuthority("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults());
