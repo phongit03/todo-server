@@ -79,10 +79,9 @@ public class TaskController {
     @PutMapping("/{id}/assign/user/{userId}")
     public ResponseEntity<Task> addTask(@PathVariable Long userId, @PathVariable Long id) {
         try {
-            Optional<Task> task = taskService.getTaskById(id);
-            Optional<UserEntity> userAssigned = userRepository.findById(userId);
-            Task assignedTask = task.get();
-            assignedTask.setUserAssigned(userAssigned.get());
+            Task assignedTask = taskService.getTaskById(id).get();
+            UserEntity userAssigned = userRepository.findById(userId).get();
+            assignedTask.setUserAssigned(userAssigned);
             taskService.addTask(assignedTask);
             System.out.println(assignedTask.getUserAssigned().getId());
             return new ResponseEntity<>(assignedTask, HttpStatus.OK);
@@ -91,6 +90,17 @@ public class TaskController {
         }
     }
 
+    @PutMapping("/{id}/update/status/{status}")
+    public ResponseEntity<Task> updateTaskStatus(@PathVariable Long id, @PathVariable String status) {
+        try {
+            Task taskUpdate = taskService.getTaskById(id).get();
+            taskUpdate.setStatus(status);
+            taskService.addTask(taskUpdate);
+            return new ResponseEntity<>(taskUpdate, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 
     @DeleteMapping("/delete")
