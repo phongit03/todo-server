@@ -26,6 +26,9 @@ public class Task {
     @Setter
     private String description;
 
+    @Setter
+    private String status;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
