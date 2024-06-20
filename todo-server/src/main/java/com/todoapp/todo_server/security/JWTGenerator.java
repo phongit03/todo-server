@@ -16,11 +16,9 @@ import java.util.Date;
 @Component
 public class JWTGenerator {
     public String generateToken(Authentication authentication) throws WeakKeyException {
-        System.out.println("Generating Token....");
         String username = authentication.getName();
         Date currentDate = new Date();
         Date expirationDate = new Date(currentDate.getTime() + SecurityConstants.JWT_EXPIRATION);
-        System.out.println("Dates init!!");
         JwtBuilder builder = Jwts.builder()
                 .subject(username)
                 .issuedAt(currentDate)
