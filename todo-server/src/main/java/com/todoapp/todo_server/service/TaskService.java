@@ -28,7 +28,7 @@ public class TaskService {
             log.info("{} Tasks Found!", tasks.size());
             return tasks;
         } catch (Exception e) {
-            throw new Exception("Error found!"+ e);
+            throw new Exception("Error found in getAll service:"+ e);
         }
     }
 
@@ -53,10 +53,17 @@ public class TaskService {
         return taskRepository.findAllByUserAssigned(userAssigned);
     }
 
-    public List<Task> getTasksByTitle(String title) {
+    public List<Task> getTasksByTitle(String title) throws Exception {
+        try {
+            log.info("Fetching tasks by title...");
+            List<Task> tasksByTitle = taskRepository.findAll().stream()
+                    .filter(task -> task.getTitle().toLowerCase().contains(title.toLowerCase()))
+                    .toList();
+            log.info("{} Tasks Found by title!", tasksByTitle.size());
+            return tasksByTitle;
+        } catch (Exception e) {
+            throw new Exception("Error found in getTasksByTitle service: " + e);
+        }
 
-        return taskRepository.findAll().stream()
-                .filter(task -> task.getTitle().toLowerCase().contains(title.toLowerCase()))
-                .collect(Collectors.toList());
     }
 }

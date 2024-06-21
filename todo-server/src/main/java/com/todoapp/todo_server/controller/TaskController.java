@@ -46,13 +46,10 @@ public class TaskController {
     @GetMapping("/search/{title}")
     public ResponseEntity<List<Task>> searchTasksByName(@PathVariable String title) {
         try {
-            log.info("Fetching tasks by search value...");
             List<Task> tasks = taskService.getTasksByTitle(title);
             if(tasks.isEmpty()) {
-                log.warn("{} Tasks Found!", 0);
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
-            log.info("{} Tasks Found!", tasks.size());
             return new ResponseEntity<>(tasks, HttpStatus.OK);
         } catch (Exception e) {
             log.error(e);
