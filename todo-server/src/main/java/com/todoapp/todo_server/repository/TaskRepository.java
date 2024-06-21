@@ -11,6 +11,6 @@ import java.util.Optional;
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
-    Optional<List<Task>> findAllByUserAssigned(Optional<UserEntity> user);
+    List<Task> findAllByUserAssigned(UserEntity user);
 
 }
