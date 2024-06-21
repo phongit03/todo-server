@@ -69,10 +69,7 @@ public class TaskService {
                 log.info("{} Tasks Found For User With Id {}", tasksById.size(), userId);
                 return tasksById;
             }
-
             throw new Exception("User with Id " + userId + " Not Found!");
-
-
         } catch (Exception e) {
             throw new Exception("Error found in getByUserId service: " + e);
         }
