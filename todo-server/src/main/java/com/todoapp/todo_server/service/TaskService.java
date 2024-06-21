@@ -40,8 +40,19 @@ public class TaskService {
         taskRepository.deleteAll();
     }
 
-    public Optional<Task> getTaskById(Long id) {
-        return taskRepository.findById(id);
+    public Task getTaskById(Long id) throws Exception {
+
+        try {
+            log.info("Finding task with id: {}...", id);
+            Optional<Task> taskById = taskRepository.findById(id);
+            if(taskById.isPresent()) {
+                log.info("Found task with id: {}!", id);
+                return taskById.get();
+            }
+            throw new Exception("User with id " + id + " not found!");
+        } catch (Exception e) {
+            throw new Exception("Error found in getTaskById service: " + e);
+        }
     }
 
     public void deleteById(Long id) {
@@ -58,10 +69,7 @@ public class TaskService {
                 log.info("{} Tasks Found For User With Id {}", tasksById.size(), userId);
                 return tasksById;
             }
-
             throw new Exception("User with Id " + userId + " Not Found!");
-
-
         } catch (Exception e) {
             throw new Exception("Error found in getByUserId service: " + e);
         }
