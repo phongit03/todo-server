@@ -37,7 +37,6 @@ public class TaskController {
             }
             return new ResponseEntity<>(tasks, HttpStatus.OK);
         }catch (Exception e) {
-            log.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -52,7 +51,6 @@ public class TaskController {
             }
             return new ResponseEntity<>(tasks, HttpStatus.OK);
         } catch (Exception e) {
-            log.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -67,7 +65,6 @@ public class TaskController {
             }
             return new ResponseEntity<>(tasks, HttpStatus.OK);
         } catch (Exception e) {
-            log.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -75,13 +72,9 @@ public class TaskController {
     @GetMapping("/{id}")
     public ResponseEntity<Task> getTaskById(@PathVariable Long id) {
         try {
-            log.info("Finding task with id: {}...", id);
-            Optional<Task> taskData = taskService.getTaskById(id);
-            taskData.ifPresent(task -> log.info("Found task with id: {}!", id));
-            return taskData.map(task -> new ResponseEntity<>(task, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NO_CONTENT));
-
+            Task task = taskService.getTaskById(id);
+            return new ResponseEntity<>(task, HttpStatus.OK);
         }catch (Exception e) {
-            log.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -99,7 +92,6 @@ public class TaskController {
             log.info("Added and assigned new task id: {} to user id: {} successfully!", newTask.getId(), userId);
             return new ResponseEntity<>(newTask, HttpStatus.CREATED);
         }catch (Exception e) {
-            log.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -109,14 +101,13 @@ public class TaskController {
         try {
             log.warn("Warning!, Only ADMIN role can perform this operation!");
             log.info("Updating task id: {} assigning to user id: {}...", id, userId);
-            Task assignedTask = taskService.getTaskById(id).get();
+            Task assignedTask = taskService.getTaskById(id);
             UserEntity userAssigned = userRepository.findById(userId).get();
             assignedTask.setUserAssigned(userAssigned);
             taskService.addTask(assignedTask);
             log.info("Updated task id: {} re-assigned to user id: {} successfully!", id, userId);
             return new ResponseEntity<>(assignedTask, HttpStatus.OK);
         }catch (Exception e) {
-            log.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -126,13 +117,12 @@ public class TaskController {
         try {
 
             log.info("Updating status of task id: {}...", id);
-            Task taskUpdate = taskService.getTaskById(id).get();
+            Task taskUpdate = taskService.getTaskById(id);
             taskUpdate.setStatus(status);
             taskService.addTask(taskUpdate);
             log.info("Updated status: {} for task by id: {} successfully!", status, id);
             return new ResponseEntity<>(taskUpdate, HttpStatus.OK);
         } catch (Exception e) {
-            log.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -146,8 +136,7 @@ public class TaskController {
             taskService.deleteAllTasks();
             log.info("Deleted all tasks successfully!!");
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            log.error(e);
+        } catch (Exception e) {;
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -162,7 +151,6 @@ public class TaskController {
             log.info("Deleted task by id: {} successfully!", id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
-            log.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
