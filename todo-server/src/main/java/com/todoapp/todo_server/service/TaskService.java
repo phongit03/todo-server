@@ -48,9 +48,24 @@ public class TaskService {
         taskRepository.deleteById(id);
     }
 
-    public Optional<List<Task>> getTasksByUserId(Long userId) {
-        Optional<UserEntity> userAssigned = userRepository.findById(userId);
-        return taskRepository.findAllByUserAssigned(userAssigned);
+    public List<Task> getTasksByUserId(Long userId) throws Exception {
+        try {
+            log.info("Fetching tasks for user with id: {}...", userId);
+            Optional<UserEntity> userAssigned = userRepository.findById(userId);
+            if (userAssigned.isPresent()) {
+                log.info("User with id {} found!", userAssigned.get().getId());
+                List<Task> tasksById = taskRepository.findAllByUserAssigned(userAssigned.get());
+                log.info("{} Tasks Found For User With Id {}", tasksById.size(), userId);
+                return tasksById;
+            }
+
+            throw new Exception("User with Id " + userId + " Not Found!");
+
+
+        } catch (Exception e) {
+            throw new Exception("Error found in getById service: " + e);
+        }
+
     }
 
     public List<Task> getTasksByTitle(String title) throws Exception {
