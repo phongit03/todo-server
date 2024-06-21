@@ -63,7 +63,7 @@ public class TaskService {
 
 
         } catch (Exception e) {
-            throw new Exception("Error found in getById service: " + e);
+            throw new Exception("Error found in getByUserId service: " + e);
         }
 
     }
