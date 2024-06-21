@@ -31,13 +31,10 @@ public class TaskController {
     @GetMapping
     public ResponseEntity<List<Task>> getAllTasks() {
         try {
-            log.info("Fetching all tasks...");
             List<Task> tasks = taskService.getAllTasks();
             if(tasks.isEmpty()) {
-                log.warn("No List Task Found!");
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
-            log.info("{} Tasks Found!", tasks.size());
             return new ResponseEntity<>(tasks, HttpStatus.OK);
         }catch (Exception e) {
             log.error(e);

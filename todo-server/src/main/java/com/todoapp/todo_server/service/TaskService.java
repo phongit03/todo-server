@@ -4,6 +4,7 @@ import com.todoapp.todo_server.entity.Task;
 import com.todoapp.todo_server.entity.UserEntity;
 import com.todoapp.todo_server.repository.TaskRepository;
 import com.todoapp.todo_server.repository.UserRepository;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Log4j2
 public class TaskService {
     @Autowired
     public TaskRepository taskRepository;
@@ -19,8 +21,15 @@ public class TaskService {
     @Autowired
     public UserRepository userRepository;
 
-    public List<Task> getAllTasks() {
-        return taskRepository.findAll();
+    public List<Task> getAllTasks() throws Exception {
+        try {
+            log.info("Fetching all tasks...");
+            List<Task> tasks = taskRepository.findAll();
+            log.info("{} Tasks Found!", tasks.size());
+            return tasks;
+        } catch (Exception e) {
+            throw new Exception("Error found!"+ e);
+        }
     }
 
     public Task addTask(Task task) {
