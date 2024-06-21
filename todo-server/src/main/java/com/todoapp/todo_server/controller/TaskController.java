@@ -59,11 +59,12 @@ public class TaskController {
 
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<Optional<List<Task>>> getTasksAssignedToUser(@PathVariable Long userId) {
+    public ResponseEntity<List<Task>> getTasksAssignedToUser(@PathVariable Long userId) {
         try {
-            log.info("Fetching tasks for user with id: {}...", userId);
-            Optional<List<Task>> tasks = taskService.getTasksByUserId(userId);
-            tasks.ifPresent(taskList -> log.info("{} Tasks Found For User Id: {}", taskList.size(), userId));
+            List<Task> tasks = taskService.getTasksByUserId(userId);
+            if(tasks.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
             return new ResponseEntity<>(tasks, HttpStatus.OK);
         } catch (Exception e) {
             log.error(e);
