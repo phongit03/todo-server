@@ -100,13 +100,7 @@ public class TaskController {
     @PutMapping("/{id}/assign/user/{userId}")
     public ResponseEntity<Task> addTask(@PathVariable Long userId, @PathVariable Long id) {
         try {
-            log.warn("Warning!, Only ADMIN role can perform this operation!");
-            log.info("Updating task id: {} assigning to user id: {}...", id, userId);
-            Task assignedTask = taskService.getTaskById(id);
-            UserEntity userAssigned = userRepository.findById(userId).get();
-            assignedTask.setUserAssigned(userAssigned);
-            taskRepository.save(assignedTask);
-            log.info("Updated task id: {} re-assigned to user id: {} successfully!", id, userId);
+            Task assignedTask = taskService.assignTaskToUser(userId, id);
             return new ResponseEntity<>(assignedTask, HttpStatus.OK);
         }catch (Exception e) {
             log.error(e);
