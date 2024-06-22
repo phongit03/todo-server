@@ -133,10 +133,7 @@ public class TaskController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<HttpStatus> deleteTaskById(@PathVariable Long id) {
         try {
-            log.warn("Warning!, Only ADMIN role can perform this operation!");
-            log.info("Deleting task by id: {}...", id);
             taskService.deleteById(id);
-            log.info("Deleted task by id: {} successfully!", id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
             log.error(e);
