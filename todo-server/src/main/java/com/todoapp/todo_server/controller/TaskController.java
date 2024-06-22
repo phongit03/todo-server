@@ -28,8 +28,6 @@ public class TaskController {
 
     @Autowired
     public UserRepository userRepository;
-    @Autowired
-    private TaskRepository taskRepository;
 
     @GetMapping
     public ResponseEntity<List<Task>> getAllTasks() {
