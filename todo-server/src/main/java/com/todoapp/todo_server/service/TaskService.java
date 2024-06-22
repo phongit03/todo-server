@@ -91,4 +91,21 @@ public class TaskService {
         }
 
     }
+
+    public Task assignTaskToUser(Long userId, Long id) throws Exception {
+        try {
+            log.info("Finding user with Id {}...", userId);
+            UserEntity user = userRepository.findById(userId)
+                    .orElseThrow(() -> new EntityNotFoundException("User With Id: "+userId+" Not Found!"));
+            log.info("Finding Task with Id {}...", id);
+            Task assignedTask = taskRepository.findById(id)
+                    .orElseThrow(() -> new EntityNotFoundException("Task By Id: " + id + " Not Found!"));
+            log.info("Assigning Task to User...");
+            assignedTask.setUserAssigned(user);
+            log.info("Assigned Task by Id {} to User by Id {}", id, userId);
+            return taskRepository.save(assignedTask);
+        } catch (Exception e) {
+            throw new Exception("Error found in Assign Task to User service: "+e);
+        }
+    }
 }
