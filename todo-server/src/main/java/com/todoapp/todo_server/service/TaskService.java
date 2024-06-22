@@ -7,8 +7,10 @@ import com.todoapp.todo_server.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
+import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,11 +49,15 @@ public class TaskService {
     public void deleteAllTasks() throws Exception {
         try {
             log.warn("Warning! Only ADMIN can perform deletion of all tasks!");
+            List<Task> currentTasks = this.getAllTasks();
+            if (currentTasks.isEmpty()) {
+                throw new EmptyResultDataAccessException("No Records For Deletion!", 0);
+            }
             log.info("Deleting All Tasks");
             taskRepository.deleteAll();
             log.info("All Tasks Deleted Successfully!");
         } catch (Exception e) {
-            throw new Exception("Error Found In Delet All Tasks service: "+e);
+            throw new Exception("Error Found In Delete All Tasks service: "+e);
         }
 
     }
