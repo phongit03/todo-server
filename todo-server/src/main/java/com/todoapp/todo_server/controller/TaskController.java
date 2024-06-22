@@ -3,6 +3,7 @@ package com.todoapp.todo_server.controller;
 import com.todoapp.todo_server.entity.Roles;
 import com.todoapp.todo_server.entity.Task;
 import com.todoapp.todo_server.entity.UserEntity;
+import com.todoapp.todo_server.repository.TaskRepository;
 import com.todoapp.todo_server.repository.UserRepository;
 import com.todoapp.todo_server.service.TaskService;
 
@@ -27,6 +28,8 @@ public class TaskController {
 
     @Autowired
     public UserRepository userRepository;
+    @Autowired
+    private TaskRepository taskRepository;
 
     @GetMapping
     public ResponseEntity<List<Task>> getAllTasks() {
@@ -86,14 +89,7 @@ public class TaskController {
     @PostMapping("/add/user/{userId}")
     public ResponseEntity<Task> addTask(@RequestBody Task taskRequest, @PathVariable Long userId) {
         try {
-            log.warn("Warning!, Only ADMIN role can perform this operation!");
-            log.info("Adding task and assigning to user with id: {}..." , userId);
-            Task newTask = userRepository.findById(userId).map(user -> {
-               log.info("Assigning task to user...");
-               taskRequest.setUserAssigned(user);
-               return taskService.addTask(taskRequest);
-            }).orElseThrow();
-            log.info("Added and assigned new task id: {} to user id: {} successfully!", newTask.getId(), userId);
+            Task newTask = taskService.addTaskAndAssign(taskRequest, userId);
             return new ResponseEntity<>(newTask, HttpStatus.CREATED);
         }catch (Exception e) {
             log.error(e);
@@ -109,7 +105,7 @@ public class TaskController {
             Task assignedTask = taskService.getTaskById(id);
             UserEntity userAssigned = userRepository.findById(userId).get();
             assignedTask.setUserAssigned(userAssigned);
-            taskService.addTask(assignedTask);
+            taskRepository.save(assignedTask);
             log.info("Updated task id: {} re-assigned to user id: {} successfully!", id, userId);
             return new ResponseEntity<>(assignedTask, HttpStatus.OK);
         }catch (Exception e) {
@@ -125,7 +121,7 @@ public class TaskController {
             log.info("Updating status of task id: {}...", id);
             Task taskUpdate = taskService.getTaskById(id);
             taskUpdate.setStatus(status);
-            taskService.addTask(taskUpdate);
+            taskRepository.save(taskUpdate);
             log.info("Updated status: {} for task by id: {} successfully!", status, id);
             return new ResponseEntity<>(taskUpdate, HttpStatus.OK);
         } catch (Exception e) {
