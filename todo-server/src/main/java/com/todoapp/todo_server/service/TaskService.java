@@ -4,9 +4,12 @@ import com.todoapp.todo_server.entity.Task;
 import com.todoapp.todo_server.entity.UserEntity;
 import com.todoapp.todo_server.repository.TaskRepository;
 import com.todoapp.todo_server.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -41,15 +44,9 @@ public class TaskService {
     }
 
     public Task getTaskById(Long id) throws Exception {
-
         try {
             log.info("Finding task with id: {}...", id);
-            Optional<Task> taskById = taskRepository.findById(id);
-            if(taskById.isPresent()) {
-                log.info("Found task with id: {}!", id);
-                return taskById.get();
-            }
-            throw new Exception("User with id " + id + " not found!");
+            return taskRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Task With Id " + id + " Not Found!"));
         } catch (Exception e) {
             throw new Exception("Error found in getTaskById service: " + e);
         }
