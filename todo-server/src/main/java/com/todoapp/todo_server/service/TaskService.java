@@ -44,8 +44,16 @@ public class TaskService {
 
     }
 
-    public void deleteAllTasks() {
-        taskRepository.deleteAll();
+    public void deleteAllTasks() throws Exception {
+        try {
+            log.warn("Warning! Only ADMIN can perform deletion of all tasks!");
+            log.info("Deleting All Tasks");
+            taskRepository.deleteAll();
+            log.info("All Tasks Deleted Successfully!");
+        } catch (Exception e) {
+            throw new Exception("Error Found In Delet All Tasks service: "+e);
+        }
+
     }
 
     public Task getTaskById(Long id) throws Exception {
