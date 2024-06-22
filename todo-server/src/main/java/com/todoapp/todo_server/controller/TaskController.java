@@ -121,10 +121,7 @@ public class TaskController {
     @DeleteMapping("/delete")
     public ResponseEntity<HttpStatus> deleteAllTasks() {
         try{
-            log.warn("Warning!, Only ADMIN role can perform this operation!");
-            log.info("Deleting all tasks...");
             taskService.deleteAllTasks();
-            log.info("Deleted all tasks successfully!!");
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {;
             log.error(e);
