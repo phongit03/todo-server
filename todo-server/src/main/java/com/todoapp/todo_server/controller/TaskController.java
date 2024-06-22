@@ -37,6 +37,7 @@ public class TaskController {
             }
             return new ResponseEntity<>(tasks, HttpStatus.OK);
         }catch (Exception e) {
+            log.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -51,6 +52,7 @@ public class TaskController {
             }
             return new ResponseEntity<>(tasks, HttpStatus.OK);
         } catch (Exception e) {
+            log.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -65,6 +67,7 @@ public class TaskController {
             }
             return new ResponseEntity<>(tasks, HttpStatus.OK);
         } catch (Exception e) {
+            log.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -75,6 +78,7 @@ public class TaskController {
             Task task = taskService.getTaskById(id);
             return new ResponseEntity<>(task, HttpStatus.OK);
         }catch (Exception e) {
+            log.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -92,6 +96,7 @@ public class TaskController {
             log.info("Added and assigned new task id: {} to user id: {} successfully!", newTask.getId(), userId);
             return new ResponseEntity<>(newTask, HttpStatus.CREATED);
         }catch (Exception e) {
+            log.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -108,6 +113,7 @@ public class TaskController {
             log.info("Updated task id: {} re-assigned to user id: {} successfully!", id, userId);
             return new ResponseEntity<>(assignedTask, HttpStatus.OK);
         }catch (Exception e) {
+            log.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -123,6 +129,7 @@ public class TaskController {
             log.info("Updated status: {} for task by id: {} successfully!", status, id);
             return new ResponseEntity<>(taskUpdate, HttpStatus.OK);
         } catch (Exception e) {
+            log.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -137,6 +144,7 @@ public class TaskController {
             log.info("Deleted all tasks successfully!!");
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {;
+            log.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -151,6 +159,7 @@ public class TaskController {
             log.info("Deleted task by id: {} successfully!", id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
+            log.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
