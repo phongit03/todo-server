@@ -71,8 +71,17 @@ public class TaskService {
         }
     }
 
-    public void deleteById(Long id) {
-        taskRepository.deleteById(id);
+    public void deleteById(Long id) throws Exception {
+        try {
+            log.info("Finding Task By Id {} For Deletion...", id);
+            Task deletedTask = taskRepository.findById(id)
+                    .orElseThrow(() -> new EntityNotFoundException("Task By Id "+id+" Not Found For Deletion!"));
+            log.info("Task By Id {} Found. Prepare Perform Deletion...", id);
+            taskRepository.delete(deletedTask);
+            log.info("Task By Id {} Deleted Successfully!", id);
+        } catch (Exception e) {
+            throw new Exception("Error found in deleteTaskById service: "+ e);
+        }
     }
 
     public List<Task> getTasksByUserId(Long userId) throws Exception {
