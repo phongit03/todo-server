@@ -111,13 +111,8 @@ public class TaskController {
     @PutMapping("/{id}/update/status/{status}")
     public ResponseEntity<Task> updateTaskStatus(@PathVariable Long id, @PathVariable String status) {
         try {
-
-            log.info("Updating status of task id: {}...", id);
-            Task taskUpdate = taskService.getTaskById(id);
-            taskUpdate.setStatus(status);
-            taskRepository.save(taskUpdate);
-            log.info("Updated status: {} for task by id: {} successfully!", status, id);
-            return new ResponseEntity<>(taskUpdate, HttpStatus.OK);
+            Task updatedTaskStatus = taskService.updateTaskStatus(id, status);
+            return new ResponseEntity<>(updatedTaskStatus, HttpStatus.OK);
         } catch (Exception e) {
             log.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
