@@ -4,13 +4,15 @@ import com.todoapp.todo_server.entity.Task;
 import com.todoapp.todo_server.entity.UserEntity;
 import com.todoapp.todo_server.repository.TaskRepository;
 import com.todoapp.todo_server.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
+import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Log4j2
@@ -32,31 +34,54 @@ public class TaskService {
         }
     }
 
-    public Task addTask(Task task) {
-        return taskRepository.save(task);
+    public Task addTaskAndAssign(Task task, Long userId) throws Exception {
+        try {
+            UserEntity user = userRepository.findById(userId)
+                    .orElseThrow(() -> new EntityNotFoundException("User with id: " + userId + " not found!"));
+            task.setUserAssigned(user);
+            return taskRepository.save(task);
+        } catch (Exception e) {
+            throw new Exception("Error found in add & assign new task service: "+ e);
+        }
+
     }
 
-    public void deleteAllTasks() {
-        taskRepository.deleteAll();
+    public void deleteAllTasks() throws Exception {
+        try {
+            log.warn("Warning! Only ADMIN can perform deletion of all tasks!");
+            List<Task> currentTasks = this.getAllTasks();
+            if (currentTasks.isEmpty()) {
+                throw new EmptyResultDataAccessException("No Records For Deletion!", 0);
+            }
+            log.info("Deleting All Tasks");
+            taskRepository.deleteAll();
+            log.info("All Tasks Deleted Successfully!");
+        } catch (Exception e) {
+            throw new Exception("Error Found In Delete All Tasks service: "+e);
+        }
+
     }
 
     public Task getTaskById(Long id) throws Exception {
-
         try {
             log.info("Finding task with id: {}...", id);
-            Optional<Task> taskById = taskRepository.findById(id);
-            if(taskById.isPresent()) {
-                log.info("Found task with id: {}!", id);
-                return taskById.get();
-            }
-            throw new Exception("User with id " + id + " not found!");
+            return taskRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Task With Id " + id + " Not Found!"));
         } catch (Exception e) {
             throw new Exception("Error found in getTaskById service: " + e);
         }
     }
 
-    public void deleteById(Long id) {
-        taskRepository.deleteById(id);
+    public void deleteById(Long id) throws Exception {
+        try {
+            log.info("Finding Task By Id {} For Deletion...", id);
+            Task deletedTask = taskRepository.findById(id)
+                    .orElseThrow(() -> new EntityNotFoundException("Task By Id "+id+" Not Found For Deletion!"));
+            log.info("Task By Id {} Found. Prepare Perform Deletion...", id);
+            taskRepository.delete(deletedTask);
+            log.info("Task By Id {} Deleted Successfully!", id);
+        } catch (Exception e) {
+            throw new Exception("Error found in deleteTaskById service: "+ e);
+        }
     }
 
     public List<Task> getTasksByUserId(Long userId) throws Exception {
@@ -88,5 +113,34 @@ public class TaskService {
             throw new Exception("Error found in getTasksByTitle service: " + e);
         }
 
+    }
+
+    public Task assignTaskToUser(Long userId, Long id) throws Exception {
+        try {
+            log.info("Finding user with Id {}...", userId);
+            UserEntity user = userRepository.findById(userId)
+                    .orElseThrow(() -> new EntityNotFoundException("User With Id: "+userId+" Not Found!"));
+            log.info("Finding Task with Id {}...", id);
+            Task assignedTask = taskRepository.findById(id)
+                    .orElseThrow(() -> new EntityNotFoundException("Task By Id: " + id + " Not Found!"));
+            assignedTask.setUserAssigned(user);
+            log.info("Assigned Task by Id {} to User by Id {}", id, userId);
+            return taskRepository.save(assignedTask);
+        } catch (Exception e) {
+            throw new Exception("Error found in Assign Task to User service: "+e);
+        }
+    }
+
+    public Task updateTaskStatus(Long id, String status) throws Exception {
+        try {
+            log.info("Finding Task By Id {}...", id);
+            Task task = taskRepository.findById(id)
+                    .orElseThrow(() -> new EntityNotFoundException("Task By Id "+id+" Not Found!"));
+            task.setStatus(status);
+            log.info("Updated Task Status {}", status);
+            return taskRepository.save(task);
+        } catch (Exception e) {
+            throw new Exception("Error found in updateTaskStatus service: "+e);
+        }
     }
 }

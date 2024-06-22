@@ -3,6 +3,7 @@ package com.todoapp.todo_server.controller;
 import com.todoapp.todo_server.entity.Roles;
 import com.todoapp.todo_server.entity.Task;
 import com.todoapp.todo_server.entity.UserEntity;
+import com.todoapp.todo_server.repository.TaskRepository;
 import com.todoapp.todo_server.repository.UserRepository;
 import com.todoapp.todo_server.service.TaskService;
 
@@ -37,6 +38,7 @@ public class TaskController {
             }
             return new ResponseEntity<>(tasks, HttpStatus.OK);
         }catch (Exception e) {
+            log.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -51,6 +53,7 @@ public class TaskController {
             }
             return new ResponseEntity<>(tasks, HttpStatus.OK);
         } catch (Exception e) {
+            log.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -65,6 +68,7 @@ public class TaskController {
             }
             return new ResponseEntity<>(tasks, HttpStatus.OK);
         } catch (Exception e) {
+            log.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -75,6 +79,7 @@ public class TaskController {
             Task task = taskService.getTaskById(id);
             return new ResponseEntity<>(task, HttpStatus.OK);
         }catch (Exception e) {
+            log.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -82,16 +87,10 @@ public class TaskController {
     @PostMapping("/add/user/{userId}")
     public ResponseEntity<Task> addTask(@RequestBody Task taskRequest, @PathVariable Long userId) {
         try {
-            log.warn("Warning!, Only ADMIN role can perform this operation!");
-            log.info("Adding task and assigning to user with id: {}..." , userId);
-            Task newTask = userRepository.findById(userId).map(user -> {
-               log.info("Assigning task to user...");
-               taskRequest.setUserAssigned(user);
-               return taskService.addTask(taskRequest);
-            }).orElseThrow();
-            log.info("Added and assigned new task id: {} to user id: {} successfully!", newTask.getId(), userId);
+            Task newTask = taskService.addTaskAndAssign(taskRequest, userId);
             return new ResponseEntity<>(newTask, HttpStatus.CREATED);
         }catch (Exception e) {
+            log.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -99,15 +98,10 @@ public class TaskController {
     @PutMapping("/{id}/assign/user/{userId}")
     public ResponseEntity<Task> addTask(@PathVariable Long userId, @PathVariable Long id) {
         try {
-            log.warn("Warning!, Only ADMIN role can perform this operation!");
-            log.info("Updating task id: {} assigning to user id: {}...", id, userId);
-            Task assignedTask = taskService.getTaskById(id);
-            UserEntity userAssigned = userRepository.findById(userId).get();
-            assignedTask.setUserAssigned(userAssigned);
-            taskService.addTask(assignedTask);
-            log.info("Updated task id: {} re-assigned to user id: {} successfully!", id, userId);
+            Task assignedTask = taskService.assignTaskToUser(userId, id);
             return new ResponseEntity<>(assignedTask, HttpStatus.OK);
         }catch (Exception e) {
+            log.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -115,14 +109,10 @@ public class TaskController {
     @PutMapping("/{id}/update/status/{status}")
     public ResponseEntity<Task> updateTaskStatus(@PathVariable Long id, @PathVariable String status) {
         try {
-
-            log.info("Updating status of task id: {}...", id);
-            Task taskUpdate = taskService.getTaskById(id);
-            taskUpdate.setStatus(status);
-            taskService.addTask(taskUpdate);
-            log.info("Updated status: {} for task by id: {} successfully!", status, id);
-            return new ResponseEntity<>(taskUpdate, HttpStatus.OK);
+            Task updatedTaskStatus = taskService.updateTaskStatus(id, status);
+            return new ResponseEntity<>(updatedTaskStatus, HttpStatus.OK);
         } catch (Exception e) {
+            log.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -131,12 +121,10 @@ public class TaskController {
     @DeleteMapping("/delete")
     public ResponseEntity<HttpStatus> deleteAllTasks() {
         try{
-            log.warn("Warning!, Only ADMIN role can perform this operation!");
-            log.info("Deleting all tasks...");
             taskService.deleteAllTasks();
-            log.info("Deleted all tasks successfully!!");
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {;
+            log.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -145,12 +133,10 @@ public class TaskController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<HttpStatus> deleteTaskById(@PathVariable Long id) {
         try {
-            log.warn("Warning!, Only ADMIN role can perform this operation!");
-            log.info("Deleting task by id: {}...", id);
             taskService.deleteById(id);
-            log.info("Deleted task by id: {} successfully!", id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
+            log.error(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
